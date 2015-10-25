@@ -1,7 +1,7 @@
 {
   "name": "build-tools-make",
   "main": "./lib/build-tools-make",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Execute targets from Makefiles",
   "repository": "https://github.com/deprint/build-tools-make",
   "license": "MIT",
