@@ -8,3 +8,9 @@ target1:
 
 target2:
 	dosomething
+
+.c.o:
+	dosomething
+
+some$(thing):
+	dosomething

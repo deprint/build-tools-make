@@ -26,6 +26,7 @@ describe 'Command Provider: Makefile', ->
         output:
           linter:
             disable_trace: false
+      regex: '^[A-Za-z][^$]+$'
     Module.activate(Command)
     model = new Module.model([projectPath, filePath], config, null)
 

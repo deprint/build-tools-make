@@ -54,8 +54,11 @@ module.exports =
           @commands = []
           require('fs').readFile path.resolve(path.dirname(@filePath), file), 'utf8', (@error, data) =>
             return reject(new Error(@error)) if @error
+            reg = null
+            reg = new RegExp(@config.regex) if @config.regex? and @config.regex isnt ''
             for line in data.split('\n')
               if (m = /^([^ ]+)\:/.exec(line))?
+                continue unless reg.test(m[1]) if reg?
                 c = new Command(@config.props)
                 c.project = @projectPath
                 c.source = @filePath
@@ -85,9 +88,16 @@ module.exports =
                 @div =>
                   @span class: 'inline-block text-subtle', 'Path to Makefile'
               @subview 'path', new TextEditorView(mini: true)
+            @div class: 'block', =>
+              @label =>
+                @div class: 'settings-name', 'Whitelist'
+                @div =>
+                  @span class: 'inline-block text-subtle', 'This regular expression matches all targets that should be visible.'
+              @subview 'regex', new TextEditorView(mini: true)
 
       initialize: (@project) ->
         @path.getModel().setText(@project.config.file ? '')
+        @regex.getModel().setText(@project.config.regex ? '^[A-Za-z][^$]+$')
 
       setCallbacks: (@hidePanes, @showPane) ->
 
@@ -95,6 +105,7 @@ module.exports =
         @on 'click', '#apply', =>
           if (p = @path.getModel().getText()) isnt ''
             @project.config.file = p
+            @project.config.regex = @regex.getModel().getText()
             @project.save()
           else
             atom.notifications?.addError 'Path must not be empty'
