@@ -52,7 +52,7 @@ module.exports =
           return reject(@error) if @error?
           return resolve() if @commands?
           @commands = []
-          require('fs').readFile path.resolve(path.dirname(@filePath), file), 'utf8', (@error, data) =>
+          require('fs').readFile (p = path.resolve(path.dirname(@filePath), file)), 'utf8', (@error, data) =>
             return reject(new Error(@error)) if @error
             reg = null
             reg = new RegExp(@config.regex) if @config.regex? and @config.regex isnt ''
@@ -63,7 +63,7 @@ module.exports =
                 c.project = @projectPath
                 c.source = @filePath
                 c.name = "make #{m[1]}"
-                c.command = "make -f \"#{@config.file}\" #{m[1]}"
+                c.command = "make -f \"#{p}\" #{m[1]}"
                 @commands.push c
             resolve()
         )

@@ -35,7 +35,7 @@ describe 'Command Provider: Makefile', ->
       expect(c.name).toBe 'make all'
       expect(c.project).toBe projectPath
       expect(c.source).toBe filePath
-      expect(c.command).toBe 'make -f "Makefile" all'
+      expect(c.command).toBe "make -f \"#{path.join(projectPath, 'Makefile')}\" all"
 
   it '::getCommandCount', ->
     waitsForPromise -> model.getCommandCount().then (count) ->
