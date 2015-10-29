@@ -6,5 +6,8 @@
 
 This is a provider package for [build-tools](https://atom.io/packages/build-tools).
 
-### Feature
+### Features
 This module provides build targets from [Makefiles](https://www.gnu.org/software/make/).
+
+* Filter targets with a regular expression
+* Execute Makefiles in other locations (e.g. for out-of-source builds)
