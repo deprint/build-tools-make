@@ -84,3 +84,42 @@ describe 'Command Provider: Makefile', ->
 
         it 'saves the config file', ->
           expect(model.save).toHaveBeenCalled()
+
+describe 'Command Provider: Makefile in sub-folder', ->
+  model = null
+  projectPath = null
+  filePath = null
+  config = null
+
+  beforeEach ->
+    projectPath = atom.project.getPaths()[0]
+    filePath = path.join(projectPath, '.build-tools.cson')
+    config =
+      file: path.join('sub0', 'Makefile')
+      overwrite_wd: true
+      props:
+        stderr:
+          highlighting: 'hc'
+          profile: 'gcc_clang'
+        output:
+          linter:
+            disable_trace: false
+      regex: '^[A-Za-z][^$]+$'
+    Module.activate(Command)
+    model = new Module.model([projectPath, filePath], config, null)
+
+  it '::getCommandByIndex', ->
+    waitsForPromise -> model.getCommandByIndex(0).then (c) ->
+      expect(c.name).toBe 'make all'
+      expect(c.project).toBe projectPath
+      expect(c.source).toBe filePath
+      expect(c.command).toBe 'make -f \"Makefile\" all'
+      expect(c.wd).toBe 'sub0'
+
+  it '::getCommandCount', ->
+    waitsForPromise -> model.getCommandCount().then (count) ->
+      expect(count).toBe 4
+
+  it '::getCommandNames', ->
+    waitsForPromise -> model.getCommandNames().then (names) ->
+      expect(names).toEqual ['make all', 'make target0', 'make target1', 'make target2']

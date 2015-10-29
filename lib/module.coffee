@@ -63,7 +63,12 @@ module.exports =
                 c.project = @projectPath
                 c.source = @filePath
                 c.name = "make #{m[1]}"
-                c.command = "make -f \"#{p}\" #{m[1]}"
+                if @config.overwrite_wd
+                  c.command = "make -f \"#{path.basename(file)}\" #{m[1]}"
+                  c.wd = path.dirname(file)
+                else
+                  c.command = "make -f \"#{p}\" #{m[1]}"
+                  c.wd = '.'
                 @commands.push c
             resolve()
         )
@@ -94,10 +99,17 @@ module.exports =
                 @div =>
                   @span class: 'inline-block text-subtle', 'This regular expression matches all targets that should be visible.'
               @subview 'regex', new TextEditorView(mini: true)
+            @div class: 'block checkbox', =>
+              @input id: 'overwrite_wd', type: 'checkbox'
+              @label =>
+                @div class: 'settings-name', 'Overwrite working directory to Makefile location'
+                @div =>
+                  @span class: 'inline-block text-subtle', 'Execute command in the folder where the Makefile is located'
 
       initialize: (@project) ->
         @path.getModel().setText(@project.config.file ? '')
         @regex.getModel().setText(@project.config.regex ? '^[A-Za-z][^$]+$')
+        @find('#overwrite_wd').prop('checked', @project.config.overwrite_wd ? true)
 
       setCallbacks: (@hidePanes, @showPane) ->
 
@@ -106,6 +118,7 @@ module.exports =
           if (p = @path.getModel().getText()) isnt ''
             @project.config.file = p
             @project.config.regex = @regex.getModel().getText()
+            @project.config.overwrite_wd = @find('#overwrite_wd').prop('checked')
             @project.save()
           else
             atom.notifications?.addError 'Path must not be empty'
